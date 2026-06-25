@@ -1,0 +1,83 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  test:
+    name: Testes automatizados
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Rodar testes
+        run: pytest -v
+
+  build:
+    name: Build da imagem Docker
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Build da imagem
+        run: docker build -t projeto1-app .
+
+      - name: Verificar container
+        run: |
+          docker run -d -p 5000:5000 --name test-app cicd-lab-app
+          sleep 3
+          curl -f http://localhost:5000/health
+          docker stop test-app
+
+  deploy:
+    name: Deploy com LocalStack
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar AWS CLI e LocalStack CLI
+        run: pip install awscli-local localstack
+
+      - name: Subir ambiente com Docker Compose
+        run: docker compose up -d
+
+      - name: Aguardar LocalStack inicializar
+        run: |
+          echo "Aguardando LocalStack..."
+          sleep 15
+          curl -f http://localhost:4566/_localstack/health
+
+      - name: Criar bucket S3 no LocalStack
+        run: awslocal s3 mb s3://cicd-lab-deploy
+
+      - name: Fazer upload do artefato para S3
+        run: awslocal s3 cp app.py s3://cicd-lab-deploy/app.py
+
+      - name: Verificar upload
+        run: awslocal s3 ls s3://cicd-lab-deploy/
+
+      - name: Verificar aplicação
+        run: |
+          sleep 5
+          curl -f http://localhost:5000/health
+          echo "Deploy realizado com sucesso!"
