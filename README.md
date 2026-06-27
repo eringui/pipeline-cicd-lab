@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# pipeline-cicd-lab
-Pipeline CI/CD desenvolvido como projeto de portfólio DevOps. API em Flask containerizada com Docker, com testes, build e validações automatizadas a cada push na branch `main`. A infraestrutura AWS é simulada com LocalStack, permitindo reproduzir um fluxo real de entrega contínua e facilitar a migração para a nuvem.
-=======
 # Pipeline CI/CD Lab
 
 [![CI/CD Pipeline](https://github.com/eringui/pipeline-cicd-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/eringui/pipeline-cicd-lab/actions/workflows/ci.yml)
@@ -175,4 +171,3 @@ Duas mudanças: remover o serviço `localstack` do `docker-compose.yml` e substi
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/erickpaivasilva/)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/eringui)
->>>>>>> c9018bb (docs: final README.md documentation)
